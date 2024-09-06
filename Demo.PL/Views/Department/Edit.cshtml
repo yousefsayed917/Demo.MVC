@@ -1,0 +1,33 @@
+﻿@model Department
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit @Model.Name Department</h1>
+<div asp-validation-summary="All"></div>
+<form asp-controller="Department" asp-action="Edit">
+    <div>
+        <label class="col-form-label" asp-for="Code"></label>
+        <input class="form-control" asp-for="Code" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label class="col-form-label" asp-for="Name"></label>
+        <input class="form-control" asp-for="Name" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label class="col-form-label" asp-for="DateOfCreation"></label>
+        <input class="form-control" asp-for="DateOfCreation" />
+    </div>
+    <br />
+    <input type="submit" value="Save" class="btn btn-primary" />
+    <a asp-controller="Department" asp-action="Index" class="btn btn-light">Back To List</a>
+</form>
+@section ValidationSection
+{
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

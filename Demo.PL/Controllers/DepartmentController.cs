@@ -1,6 +1,7 @@
 ﻿using Demo.BLL.Interfaces;
 using Demo.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Demo.PL.Controllers
 {
@@ -13,9 +14,11 @@ namespace Demo.PL.Controllers
             _departmentRepository = departmentRepository;
         }
         #region Actions
-        public IActionResult Index()
+        public IActionResult Index(string SearchString)
         {
             var department = _departmentRepository.GetAll();
+            if (!string.IsNullOrEmpty(SearchString))
+                department = department.Where(e => e.Name.Contains(SearchString)).ToList();
             return View(department);
         }
         [HttpGet]
@@ -29,6 +32,7 @@ namespace Demo.PL.Controllers
             if (ModelState.IsValid)//server side validtion
             {
                 _departmentRepository.Add(department);
+                TempData["AlertMessage"] = "Department Added Successfuly";
                 return RedirectToAction(nameof(Index));
             }
             return View(department);
@@ -64,6 +68,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     _departmentRepository.Update(department);
+                    TempData["AlertMessage"] = "Department Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -92,6 +97,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     _departmentRepository.Delete(department);
+                    TempData["AlertMessage"] = "Department Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

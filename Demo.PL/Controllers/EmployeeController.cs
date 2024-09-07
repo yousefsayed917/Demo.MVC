@@ -34,6 +34,7 @@ namespace Demo.PL.Controllers
             if (ModelState.IsValid)//server side validtion
             {
                 _employeeRepository.Add(employee);
+                TempData["AlertMessage"] = "Employee Added Successfuly";
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
@@ -69,6 +70,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     _employeeRepository.Update(employee);
+                    TempData["AlertMessage"] = "Employee Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -97,6 +99,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     _employeeRepository.Delete(employee);
+                    TempData["AlertMessage"] = "Employee Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

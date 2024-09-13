@@ -18,9 +18,16 @@ namespace Demo.PL.Controllers
         }
         public IActionResult Index(string SearchString)
         {
+            //الفرق مابنهم بيظهر لما اخزنهم في فاريبول
+            //ViewData["Message"] = "hello from view date";
+            //1-view data =>key value pair[dictionary] من الاكشن للفيو 
+            //transfer data from controller[action]to its view //.net framework 3.5
+            //ViewBag.Message = "hello from view bag";
+            //1-view bag =>key value pair[dictionary] من الاكشن للفيو 
+            //transfer data from controller[action]to its view //.net framework 4.0
             var employee = _employeeRepository.GetAll();
             if (!string.IsNullOrEmpty(SearchString))
-                employee=employee.Where(e=>e.Name.Contains(SearchString)).ToList();
+                employee = employee.Where(e => e.Name.Contains(SearchString)).ToList();
             return View(employee);
         }
         [HttpGet]
@@ -33,8 +40,11 @@ namespace Demo.PL.Controllers
         {
             if (ModelState.IsValid)//server side validtion
             {
-                _employeeRepository.Add(employee);
-                TempData["AlertMessage"] = "Employee Added Successfuly";
+                int result = _employeeRepository.Add(employee);
+                if (result > 0)
+                    TempData["AlertMessage"] = "Employee Added Successfuly";
+                //1-temp data =>key value pair[dictionary] من الاكشن للأكشن
+                //transfer data from action to action //.net framework 4.0
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);

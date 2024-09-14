@@ -1,4 +1,4 @@
-﻿@model Department
+﻿@model DepartmentViewModel
 @{
     ViewData["Title"] = "Create";
 }
@@ -6,7 +6,7 @@
 <h1>Create New Department</h1>
 <br />
 <form asp-controller="Department" asp-action="Create">
-    <partial name="PartialViews/_CreateEditView" />@**@
+    <partial name="PartialViews/_CreateEditView" />@*Render Partial View*@
     <br />
     <input type="submit" value="Submit" class="btn btn-primary" />
     <a asp-controller="Department" asp-action="Index" class="btn btn-light">Back To List</a>

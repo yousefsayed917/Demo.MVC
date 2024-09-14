@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Demo.DAL.Models;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System;
 
-namespace Demo.DAL.Models
+namespace Demo.PL.ViewModels
 {
-    public class Department
+    public class DepartmentViewModel
     {
         public int Id { get; set; }
-        [Required()]
+        [Required(ErrorMessage = "name is required")]
         public string Name { get; set; }
-        [Required()]
+        [Required(ErrorMessage = "code is required")]
         public string Code { get; set; }
         public DateTime DateOfCreation { get; set; }
         [InverseProperty("Department")]

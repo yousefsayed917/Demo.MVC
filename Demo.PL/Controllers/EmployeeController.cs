@@ -1,9 +1,13 @@
-﻿using Demo.BLL.Interfaces;
+﻿using AutoMapper;
+using Demo.BLL.Interfaces;
 using Demo.BLL.Repositories;
 using Demo.DAL.Contexts;
 using Demo.DAL.Models;
+using Demo.PL.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Demo.PL.Controllers
@@ -12,11 +16,13 @@ namespace Demo.PL.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository,IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
+            _mapper = mapper;
         }
         public IActionResult Index(string SearchString)
         {
@@ -28,9 +34,10 @@ namespace Demo.PL.Controllers
             //1-view bag =>key value pair[dictionary] من الاكشن للفيو 
             //transfer data from controller[action]to its view //.net framework 4.0
             var employee = _employeeRepository.GetAll();
+            var MappedEmployee = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employee);
             if (!string.IsNullOrEmpty(SearchString))
                 employee = employee.Where(e => e.Name.Contains(SearchString)).ToList();
-            return View(employee);
+            return View(MappedEmployee);
         }
         [HttpGet]
         public IActionResult Create()
@@ -39,18 +46,28 @@ namespace Demo.PL.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel employeeview)
         {
             if (ModelState.IsValid)//server side validtion
             {
-                int result = _employeeRepository.Add(employee);
+                //Manual Mapping 
+                //var MappedEmployee = new Employee
+                //{
+                //    Name = employeeview.Name,
+                //    Age = employeeview.Age,
+                //    Address = employeeview.Address,
+                //    PhoneNumber = employeeview.PhoneNumber,
+                //    Email = employeeview.Email,
+                //};
+                var MappedEmployee=_mapper.Map<EmployeeViewModel,Employee>(employeeview);
+                int result = _employeeRepository.Add(MappedEmployee);
                 if (result > 0)
                     TempData["AlertMessage"] = "Employee Added Successfuly";
                 //1-temp data =>key value pair[dictionary] من الاكشن للأكشن
                 //transfer data from action to action //.net framework 4.0
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            return View(employeeview);
         }
         public IActionResult Details(int? id, string ViewName = "Details")
         {
@@ -60,7 +77,8 @@ namespace Demo.PL.Controllers
             var employee = _employeeRepository.GetById(id.Value);
             if (employee == null)
                 return NotFound();
-            return View(ViewName, employee);
+            var MappedEmployee = _mapper.Map<Employee,EmployeeViewModel>(employee);
+            return View(ViewName, MappedEmployee);
         }
         [HttpGet]
         public IActionResult Edit(int? id)
@@ -75,14 +93,15 @@ namespace Demo.PL.Controllers
             return Details(id, "Edit");
         }
         [HttpPost]
-        public IActionResult Edit(Employee employee, [FromRoute] int id)
+        public IActionResult Edit(EmployeeViewModel employeeview, [FromRoute] int id)
         {
 
             if (ModelState.IsValid)//server side validtion
             {
                 try
                 {
-                    _employeeRepository.Update(employee);
+                    var MappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeview);
+                    _employeeRepository.Update(MappedEmployee);
                     TempData["AlertMessage"] = "Employee Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
@@ -91,7 +110,7 @@ namespace Demo.PL.Controllers
                     ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
-            return View(employee);
+            return View(employeeview);
         }
         [HttpGet]
         public IActionResult Delete(int? id)
@@ -105,13 +124,14 @@ namespace Demo.PL.Controllers
             return Details(id, "Delete");
         }
         [HttpPost]
-        public IActionResult Delete(Employee employee, [FromRoute] int id)
+        public IActionResult Delete(EmployeeViewModel employeeview, [FromRoute] int id)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _employeeRepository.Delete(employee);
+                    var MappedEmployee = _mapper.Map<EmployeeViewModel,Employee>(employeeview);
+                    _employeeRepository.Delete(MappedEmployee);
                     TempData["AlertMessage"] = "Employee Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }

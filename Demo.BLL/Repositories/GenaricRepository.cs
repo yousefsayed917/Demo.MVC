@@ -32,8 +32,8 @@ namespace Demo.BLL.Repositories
 
         public IEnumerable<T> GetAll()
         {
-            if (typeof(T)==typeof(Employee))
-                return (IEnumerable<T>)_dbcontext.Employees.Include(e=>e.Department).ToList();
+            //if (typeof(T)==typeof(Employee))
+            //    return (IEnumerable<T>)_dbcontext.Employees.Include(e=>e.Department).ToList();//Egarloading
             return _dbcontext.Set<T>().ToList();
         }
         public T GetById(int id)

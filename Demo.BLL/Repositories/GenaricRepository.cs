@@ -13,7 +13,7 @@ namespace Demo.BLL.Repositories
     public class GenaricRepository<T> : IGenaricRepository<T> where T : class
     {
         private readonly MvcDbcontext _dbcontext;
-        
+
         public GenaricRepository(MvcDbcontext dbcontext)
         {
             _dbcontext = dbcontext;
@@ -31,9 +31,11 @@ namespace Demo.BLL.Repositories
         }
 
         public IEnumerable<T> GetAll()
-
-          => _dbcontext.Set<T>().ToList();
-
+        {
+            if (typeof(T)==typeof(Employee))
+                return (IEnumerable<T>)_dbcontext.Employees.Include(e=>e.Department).ToList();
+            return _dbcontext.Set<T>().ToList();
+        }
         public T GetById(int id)
 
             => _dbcontext.Set<T>().Find(id);

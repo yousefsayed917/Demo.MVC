@@ -4,7 +4,7 @@
 }
 
 <h1>Employee @Model.Name Details</h1>
-<partial name="_DeleteDetailsView" />
+<partial name="PartialViews/_DeleteDetailsView" />
 <br />
 <a asp-controller="Employee" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Edit</a>
 <a asp-controller="Employee" asp-action="Index" class="btn btn-light">Back To List</a>

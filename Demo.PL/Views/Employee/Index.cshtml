@@ -1,17 +1,16 @@
 ﻿@model IEnumerable<Employee>
 @{
     ViewData["Title"] = "All Employee";//هنا باعتين مسدج من فيو لل لاي اوت يعني من فيو ل فيو
-                                       //     string viewdata = ViewData["Message"] as string;//inforce type safty=>require casting[strongly typed]
-                                       //     string viewbag = ViewBag.Message;//can not inforce type safty عشان هي ديناميك وبتاخد وقت علي ما تحدد نوع الداتا
+//string viewdata = ViewData["Message"] as string;//inforce type safty=>require casting[strongly typed]
+//string viewbag = ViewBag.Message;//can not inforce type safty عشان هي ديناميك وبتاخد وقت علي ما تحدد نوع الداتا
 }
 @* <div class="notifi alert alert-success">@ViewData["Message"]</div>
 <div class="notifi alert alert-success">@ViewBag.Message</div> *@
 <a asp-controller="Employee" asp-action="Create" class="btn btn-success">Add New Employee</a>
 @if (TempData["AlertMessage"] != null)
 {
-    <div class="alert alert-success ,mt-4">
+    <div id="DivId" class="alert alert-success  mt-4">
         @TempData["AlertMessage"]
-        <span>&times;</span>
     </div>
 }
 <div class="m-4">
@@ -52,7 +51,7 @@
                     <td>@item.Age</td>
                     <td>@item.Address</td>
                     <td>@Html.DisplayFor(e => item.Salary)</td>
-                    <td>@item.Department.Name</td>
+                    <td>@Html.DisplayFor(e => item.Department.Name)</td>
                     <td>@Html.DisplayFor(e => item.Email)</td>
                     <td>@item.PhoneNumber</td>
                     <td>@item.HireDate</td>

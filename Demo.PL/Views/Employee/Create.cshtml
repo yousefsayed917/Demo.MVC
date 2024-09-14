@@ -6,11 +6,11 @@
 <h1>Create New Employee</h1>
 <br />
 
-<form asp-controller="Employee" asp-action="Create">
-    <partial name="_CreateEditView" />
+<form asp-action="Create">
+    <partial name="PartialViews/_CreateEditView" />
     <br />
     <input type="submit" value="Submit" class="btn btn-primary" />
-    <a asp-controller="Employee" asp-action="Index" class="btn btn-light">Back To List</a>
+    <a asp-action="Index" class="btn btn-light">Back To List</a>
 </form>
 @section ValidationSection
 {

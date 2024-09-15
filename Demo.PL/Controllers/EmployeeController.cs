@@ -14,14 +14,16 @@ namespace Demo.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartmentRepository _departmentRepository;
+        //private readonly IEmployeeRepository _employeeRepository;
+        //private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository,IMapper mapper)
+        public EmployeeController(/*IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository*/IUnitOfWork unitOfWork,IMapper mapper)
         {
-            _employeeRepository = employeeRepository;
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            //_employeeRepository = employeeRepository;
+            //_departmentRepository = departmentRepository;
             _mapper = mapper;
         }
         public IActionResult Index(string SearchString)
@@ -33,7 +35,7 @@ namespace Demo.PL.Controllers
             //ViewBag.Message = "hello from view bag";
             //1-view bag =>key value pair[dictionary] من الاكشن للفيو 
             //transfer data from controller[action]to its view //.net framework 4.0
-            var employee = _employeeRepository.GetAll();
+            var employee = _unitOfWork.EmployeeRepository.GetAll();
             var MappedEmployee = _mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employee);
             if (!string.IsNullOrEmpty(SearchString))
                 employee = employee.Where(e => e.Name.Contains(SearchString)).ToList();
@@ -42,7 +44,7 @@ namespace Demo.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Department = _departmentRepository.GetAll();
+            ViewBag.Department = _unitOfWork.DepartmentRepository.GetAll();
             return View();
         }
         [HttpPost]
@@ -60,7 +62,8 @@ namespace Demo.PL.Controllers
                 //    Email = employeeview.Email,
                 //};
                 var MappedEmployee=_mapper.Map<EmployeeViewModel,Employee>(employeeview);
-                int result = _employeeRepository.Add(MappedEmployee);
+                 _unitOfWork.EmployeeRepository.Add(MappedEmployee);
+                int result=_unitOfWork.Complete(); 
                 if (result > 0)
                     TempData["AlertMessage"] = "Employee Added Successfuly";
                 //1-temp data =>key value pair[dictionary] من الاكشن للأكشن
@@ -74,7 +77,7 @@ namespace Demo.PL.Controllers
             if (id == null)
                 return BadRequest();//status code 400
 
-            var employee = _employeeRepository.GetById(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.GetById(id.Value);
             if (employee == null)
                 return NotFound();
             var MappedEmployee = _mapper.Map<Employee,EmployeeViewModel>(employee);
@@ -101,7 +104,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     var MappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeview);
-                    _employeeRepository.Update(MappedEmployee);
+                    _unitOfWork.EmployeeRepository.Update(MappedEmployee);
                     TempData["AlertMessage"] = "Employee Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
@@ -131,7 +134,7 @@ namespace Demo.PL.Controllers
                 try
                 {
                     var MappedEmployee = _mapper.Map<EmployeeViewModel,Employee>(employeeview);
-                    _employeeRepository.Delete(MappedEmployee);
+                    _unitOfWork.EmployeeRepository.Delete(MappedEmployee);
                     TempData["AlertMessage"] = "Employee Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }

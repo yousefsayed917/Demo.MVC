@@ -11,18 +11,20 @@ namespace Demo.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        //private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentRepository departmentRepository,IMapper mapper)
+        public DepartmentController(/*IDepartmentRepository departmentRepository*/IUnitOfWork unitOfWork,IMapper mapper)
         {
-            _departmentRepository = departmentRepository;
+            //_departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         #region Actions
         public IActionResult Index(string SearchString)
         {
-            var department = _departmentRepository.GetAll();
+            var department = _unitOfWork.DepartmentRepository.GetAll();
             var MappedDepartment = _mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(department);
             if (!string.IsNullOrEmpty(SearchString))
                 department = department.Where(e => e.Name.Contains(SearchString)).ToList();

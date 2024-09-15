@@ -34,7 +34,8 @@ namespace Demo.PL
                 options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });//Allow Dependency Injection
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            //services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
             services.AddAutoMapper(m => m.AddProfile(new DepartmentProfile()));
         }

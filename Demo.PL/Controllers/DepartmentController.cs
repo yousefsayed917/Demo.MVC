@@ -15,7 +15,7 @@ namespace Demo.PL.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public DepartmentController(/*IDepartmentRepository departmentRepository*/IUnitOfWork unitOfWork,IMapper mapper)
+        public DepartmentController(/*IDepartmentRepository departmentRepository*/IUnitOfWork unitOfWork, IMapper mapper)
         {
             //_departmentRepository = departmentRepository;
             _unitOfWork = unitOfWork;
@@ -41,22 +41,24 @@ namespace Demo.PL.Controllers
             if (ModelState.IsValid)//server side validtion
             {
                 var MappedDepartment = _mapper.Map<DepartmentViewModel, Department>(departmentview);
-                _departmentRepository.Add(MappedDepartment);
-                TempData["AlertMessage"] = "Department Added Successfuly";
+                _unitOfWork.DepartmentRepository.Add(MappedDepartment);
+                int result = _unitOfWork.Complete();
+                if (result > 0)
+                    TempData["AlertMessage"] = "Department Added Successfuly";
                 return RedirectToAction(nameof(Index));
             }
             return View(departmentview);
         }
-        public IActionResult Details(int? id , string ViewName="Details")
+        public IActionResult Details(int? id, string ViewName = "Details")
         {
             if (id == null)
                 return BadRequest();//status code 400
 
-            var department = _departmentRepository.GetById(id.Value);
+            var department = _unitOfWork.DepartmentRepository.GetById(id.Value);
             if (department == null)
                 return NotFound();
-            var MappedDepartment=_mapper.Map<Department, DepartmentViewModel>(department);
-            return View(ViewName,MappedDepartment);
+            var MappedDepartment = _mapper.Map<Department, DepartmentViewModel>(department);
+            return View(ViewName, MappedDepartment);
         }
         [HttpGet]
         public IActionResult Edit(int? id)
@@ -68,19 +70,21 @@ namespace Demo.PL.Controllers
             //    return NotFound();
 
             //return View(department);
-            return Details(id,"Edit");
+            return Details(id, "Edit");
         }
         [HttpPost]
-        public IActionResult Edit(DepartmentViewModel departmentview, [FromRoute]int id)
+        public IActionResult Edit(DepartmentViewModel departmentview, [FromRoute] int id)
         {
 
             if (ModelState.IsValid)//server side validtion
             {
                 try
                 {
-                    var MappedDepartment = _mapper.Map<DepartmentViewModel,Department>(departmentview);
-                    _departmentRepository.Update(MappedDepartment);
-                    TempData["AlertMessage"] = "Department Updated Successfuly";
+                    var MappedDepartment = _mapper.Map<DepartmentViewModel, Department>(departmentview);
+                    _unitOfWork.DepartmentRepository.Update(MappedDepartment);
+                    int result = _unitOfWork.Complete();
+                    if (result > 0)
+                        TempData["AlertMessage"] = "Department Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -109,8 +113,10 @@ namespace Demo.PL.Controllers
                 try
                 {
                     var MappedDepartment = _mapper.Map<DepartmentViewModel, Department>(departmentview);
-                    _departmentRepository.Delete(MappedDepartment);
-                    TempData["AlertMessage"] = "Department Deleted Successfuly";
+                    _unitOfWork.DepartmentRepository.Delete(MappedDepartment);
+                    int result = _unitOfWork.Complete();
+                    if (result > 0)
+                        TempData["AlertMessage"] = "Department Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

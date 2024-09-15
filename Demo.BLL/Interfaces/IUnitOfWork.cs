@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Demo.BLL.Interfaces
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         //Segnature for property for each and every repository interface
         public IEmployeeRepository EmployeeRepository { get; set; }

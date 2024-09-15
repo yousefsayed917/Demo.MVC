@@ -105,7 +105,9 @@ namespace Demo.PL.Controllers
                 {
                     var MappedEmployee = _mapper.Map<EmployeeViewModel, Employee>(employeeview);
                     _unitOfWork.EmployeeRepository.Update(MappedEmployee);
-                    TempData["AlertMessage"] = "Employee Updated Successfuly";
+                    int result = _unitOfWork.Complete();
+                    if (result > 0)
+                        TempData["AlertMessage"] = "Employee Updated Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)
@@ -135,7 +137,9 @@ namespace Demo.PL.Controllers
                 {
                     var MappedEmployee = _mapper.Map<EmployeeViewModel,Employee>(employeeview);
                     _unitOfWork.EmployeeRepository.Delete(MappedEmployee);
-                    TempData["AlertMessage"] = "Employee Deleted Successfuly";
+                    int result = _unitOfWork.Complete();
+                    if (result > 0)
+                        TempData["AlertMessage"] = "Employee Deleted Successfuly";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (System.Exception ex)

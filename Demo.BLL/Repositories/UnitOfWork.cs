@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Demo.BLL.Repositories
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork ,IDisposable
     {
         private readonly MvcDbcontext _dbcontext;
 
@@ -25,6 +25,11 @@ namespace Demo.BLL.Repositories
         public int Complete()
         {
             return _dbcontext.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            _dbcontext.Dispose();
         }
     }
 }

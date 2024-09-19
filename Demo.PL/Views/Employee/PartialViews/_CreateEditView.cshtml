@@ -1,4 +1,10 @@
-﻿@model Employee
+﻿@model EmployeeViewModel
+@inject IDepartmentRepository _departmentRepo
+
+@{
+    // var departments = new SelectList(ViewData["Departments"] as IEnumerable<Department>, nameof(Department.Id),nameof(Department.Name));
+    var departments = new SelectList(await _departmentRepo.GetAllAsync(), nameof(Department.Id), nameof(Department.Name));
+}
 
 <div>
     <label class="col-form-label" asp-for="Name"></label>
@@ -21,10 +27,10 @@
     <input class="form-control" asp-for="Salary" />
     <span asp-validation-for="Salary" class="text-danger"></span>
 </div>
-<div>
-    <label class="col-form-label" asp-for="Department"></label>
-    <select class="form-control" asp-items="@(new SelectList(ViewBag.Department,"Id","Name"))" asp-for="DepartmentId">
-        <option value="@null"> Select Department </option>
+<div class="form-group">
+    <label asp-for="DepartmentId" class="col-form-label"></label>
+    <select asp-for="DepartmentId" class="form-control" asp-items="@departments">
+        <option value="@null">-- Select Department --</option>
     </select>
 </div>
 <div>

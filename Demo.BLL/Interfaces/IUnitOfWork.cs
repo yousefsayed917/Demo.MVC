@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Demo.BLL.Interfaces
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork 
     {
         //Segnature for property for each and every repository interface
         public IEmployeeRepository EmployeeRepository { get; set; }
         public IDepartmentRepository DepartmentRepository { get; set; }
-        int Complete();
+        Task<int> CompleteAsync();
     }
 }

@@ -2,57 +2,63 @@
 using Demo.PL.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading.Tasks;
 
-namespace Demo.PL.Controllers
+namespace Demo.Pl.Controllers
 {
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        #region Register 
+        #region Register
+        //Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel Model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid)// Server Side Validation
             {
                 var User = new AppUser()
                 {
-                    UserName = Model.Email.Split('@')[0],
-                    Email = Model.Email,
-                    IsAgree = Model.IsAgree,
-                    FirstName = Model.FirstName,
-                    LastName = Model.LastName,
+                    UserName = model.Email.Split('@')[0],
+                    Email = model.Email,
+                    IsAgree = model.IsAgree,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+
                 };
-                var Result = await _userManager.CreateAsync(User);
+                var Result = await _userManager.CreateAsync(User, model.Password);
                 if (Result.Succeeded)
                 {
+
                     return RedirectToAction(nameof(Login));
                 }
-                foreach (var error in Result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in Result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
 
-
             }
-            return View(Model);
-
+            return View(model);
         }
+
         #endregion
         #region Login
+        // Login
         [HttpGet]
         public IActionResult Login()
         {
@@ -61,27 +67,38 @@ namespace Demo.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-
-            if (ModelState.IsValid)
+            if (ModelState.IsValid)// Server Side Validation
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user is not null)
+                var User = await _userManager.FindByEmailAsync(model.Email);
+                if (User is not null)
                 {
-                    var Flag = await _userManager.CheckPasswordAsync(user, model.Password);
-                    if (Flag)
+                    var Result = await _userManager.CheckPasswordAsync(User, model.Password);
+                    if (Result)
                     {
-                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-                        if (result.Succeeded)
+                        // Login
+                        var LoginResult = await _signInManager.PasswordSignInAsync(User, model.Password, model.RememberMe, false);
+                        if (LoginResult.Succeeded)
                         {
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("index", "Home");
                         }
                     }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Passowrd Is Incorrect");
+                    }
+
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, " Email is not Exists");
                 }
 
-                ModelState.AddModelError(string.Empty, "Invalid Login!");
             }
 
+
             return View(model);
+
+
         }
         #endregion
         #region SignOut
@@ -91,5 +108,16 @@ namespace Demo.PL.Controllers
             return RedirectToAction(nameof(Login));
         }
         #endregion
+
+
+
+
+
+        //Login
+        //Sign Out
+        // Forgert Passowrd
+        // Reset Password
+
     }
+
 }
